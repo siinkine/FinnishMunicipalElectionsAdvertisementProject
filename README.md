@@ -1,0 +1,2 @@
+# FinnishMunicipalElectionsAdvertisementProject
+Finnish Municipal Elections Advertisement Recommendation System
