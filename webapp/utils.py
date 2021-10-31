@@ -190,7 +190,7 @@ def comp_regression(df, municipal,budget, x_name = 'CampaingTotalCosts', y_name 
     '''
     X_chosen, x_vars, df_restric, municipal,path_save  = budget_allocation(df, municipal, plot=False)
 
-    df_restric = df_restric[df_restric['Selected']==1]   #take only chosen ones
+   # df_restric = df_restric[df_restric['Selected']==1]   #take only chosen ones
     #Fit data:
     X = df_restric[x_name].values
     X = np.expand_dims(X, axis=1)
