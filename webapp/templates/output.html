@@ -1,0 +1,86 @@
+{% extends 'base2.html' %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+<!---return render_template('output.html', name = municipal, json_data=json_data) --->
+
+<!DOCTYPE html>
+<html>
+<body style="text-align: center">
+
+<h1>{{ name }}</h1>
+<br>
+<p>Median values of candidate spending split on Selected and Not selected</p>
+<div>
+<img src= {{im1}}  alt="Chart" width="600", height ="auto">
+</div>
+<br>
+<br>
+<p>Regression on campaign cost to total number of votes gained</p>
+<div>
+<img src= {{im2}} alt="Chart" width="600", height ="auto">
+</div>
+<br>
+<br>
+
+<h2> Estimated number of votes:</h2>
+
+
+<p>Using given budged ({{budget}} euros) and multivariate regression:</p>
+<p id="est_multi1"></p>
+<p>Using median budget over selected candidates and multivariate regression:</p>
+<p id="est_multi2"></p>
+
+<h2> Classify chosen or not :</h2>
+<p>Using given budged ({{budget}} euros):</p>
+<p id="est_cla1"></p>
+<p>Using median budget:</p>
+<p id="est_cla2"></p>
+<p>Please note that this is only a rough directive estimate based on budget and is prone to errors</p>
+
+
+
+<script>
+    var json_data =  JSON.parse({{json_data|tojson}})
+    console.log(json_data)
+
+    document.getElementById("est_multi1").innerHTML = Number(json_data['y_votes_multivar']).toFixed(0);
+    document.getElementById("est_multi2").innerHTML = Number(json_data['y_votes_med_multivar']).toFixed(0);
+
+    if (Number(json_data['chosen_bud']).toFixed(0) == 1){
+        //document.getElementById("est_cla1").innerHTML = Number(json_data['chosen_bud']).toFixed(0);
+        document.getElementById("est_cla1").innerHTML = String("Not selected");
+
+    } else {
+        document.getElementById("est_cla1").innerHTML = String("Selected");
+    }
+
+    if (Number(json_data['chosen_med']).toFixed(0) == 1){
+        //document.getElementById("est_cla1").innerHTML = Number(json_data['chosen_bud']).toFixed(0);
+        document.getElementById("est_cla2").innerHTML = String("Not selected");
+
+    } else {
+        document.getElementById("est_cla2").innerHTML = String("Selected");
+    }
+
+    //document.getElementById("est_cla1").innerHTML = Number(json_data['chosen_bud']).toFixed(0);
+    //document.getElementById("est_cla2").innerHTML = Number(json_data['chosen_med']).toFixed(0);
+
+
+    //document.write("Hello JavaScript!");
+    //document.write(json_data);
+
+
+
+</script>
+
+
+</body>
+<br>
+<br>
+<br>
+</html>
+{% endblock %}
