@@ -86,7 +86,7 @@ def budget_distribution(df, municipal, plot=True,  flag_median = True):
     return X_chosen, x_vars, path_save
 
 
-def pool_df(df, municipal,  min_number_candicates = 100, budget_at_least=1000, min_number_TotalVotes = 30):
+def pool_df(df, municipal,  min_number_candicates = 100, budget_at_least=1, min_number_TotalVotes = 1):
     '''This function limits dataframe to municipal if "min_number_cancicates" of candicates with
     budget of "budget_at_least" and at least  "min_number_TotalVotes".
     
@@ -190,7 +190,7 @@ def comp_regression(df, municipal,budget, x_name = 'CampaingTotalCosts', y_name 
     '''
     X_chosen, x_vars, df_restric, municipal,path_save  = budget_allocation(df, municipal, plot=False)
 
-   # df_restric = df_restric[df_restric['Selected']==1]   #take only chosen ones
+    #df_restric = df_restric[df_restric['Selected']==1]   #take only chosen ones
     #Fit data:
     X = df_restric[x_name].values
     X = np.expand_dims(X, axis=1)
@@ -261,19 +261,22 @@ def multi_var_regression(df, municipal, budget,  x_vars, yname = 'TotalVotes'):
         regression score
     '''
     X_chosen, x_vars, df_restric,municipal,path_save  = budget_allocation(df, municipal,plot=False)
-    df_restric = df_restric[df_restric['Selected']==1]   #take only chosen ones
+    df_restric2 = df_restric.copy()
+    df_restric2 = df_restric2[df_restric2['Selected']==1]   #take only chosen ones
 
     y_train = df_restric[yname].values
 
     df_X = df_restric[x_vars]
+    df_X2 = df_restric[x_vars]
 
     X_train = df_X.to_numpy()
+    X_train2 = df_X2.to_numpy()
     #X = StandardScaler().fit_transform(X)
     #train using all data!
     #    X_train, X_test, y_train, y_test = \
     #train_test_split(X, y, test_size=.1, random_state=42)
 
-    reg = LinearRegression().fit(X_train, y_train)
+    reg = LinearRegression(positive=True).fit(X_train, y_train)
     
     #Distribute budget chosen:
     X_budget = budget*(X_chosen/np.sum(X_chosen[1:-1]))
@@ -283,10 +286,11 @@ def multi_var_regression(df, municipal, budget,  x_vars, yname = 'TotalVotes'):
 
     
     y_votes = reg.predict(np.expand_dims(X_budget, axis=0))
+
     y_votes_median = reg.predict(np.expand_dims(X_chosen, axis=0))
+    print(np.expand_dims(X_budget, axis=0).shape)
+    print(np.expand_dims(X_chosen, axis=0).shape)
     return y_votes, y_votes_median, reg.score(X_train, y_train)
-
-
 
 
 def classify_chosen_not(df, municipal, budget):

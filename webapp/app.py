@@ -4,12 +4,11 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-#from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import io
 import random
 
-from webapp import utils
+from  app import utils
 import json
 
 #Kuvien piirtäminen aiheuttaa erroria ilman tätä.
@@ -19,8 +18,6 @@ plt.switch_backend('agg')
 df = pd.read_csv('Data_12_17_21_cleaned.csv')
 df = utils.rename_to_english(df)
 municipal_names = df['MunicipalName'].unique()
-
-
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -35,10 +32,10 @@ def to_test():
     if request.method == 'POST':    
         municipal = request.form['Municipal']
         budget = request.form['budget']
-        age = request.form['age']
-        gender = request.form['sukupuoli']
+        #age = request.form['age']
+        #gender = request.form['sukupuoli']
 
-        json_data, path_im1, path_im2 = perform_master_analysis(municipal, budget, age, gender)
+        json_data, path_im1, path_im2 = perform_master_analysis(municipal, budget)#, age, gender)
 
         return render_template('output.html', name = municipal, budget=budget, im1=path_im1, im2=path_im2,  json_data=json_data)
     else:
@@ -49,15 +46,15 @@ def overallstatistics():
     return render_template('overall.html')
 
 
-def perform_master_analysis(municipal, budget, age, gender):
+def perform_master_analysis(municipal, budget): #, age, gender):
   #  import pdb; pdb.set_trace()
     #datatypes sanity check:
     df = pd.read_csv('Data_12_17_21_cleaned.csv')
     df = utils.rename_to_english(df)
     municipal = municipal
     budget = int(budget)
-    age = int(age) #not used
-    gender = gender #not used
+    #age = int(age) #not used
+    #gender = gender #not used
 
     #Budget allocation:
     X_chosen, x_vars, df_restric, municipal, path_im1  = utils.budget_allocation(df, municipal, plot=True)
@@ -76,8 +73,6 @@ def perform_master_analysis(municipal, budget, age, gender):
                 'chosen_bud': list(y_budget), 'chosen_med':list(y_chosen)} 
     json_data = json.dumps(dct_res) 
 
-    #plt.plot(data['Sukupuoli'][data['Kuntanro']==user])
-    #plt.savefig('static/images/new_plot.png')
     return json_data, path_im1, path_im2
 
 
